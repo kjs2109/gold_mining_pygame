@@ -1,4 +1,7 @@
-# 집게를 좌우로 이동 시키기 and swing
+# 집게 발사
+# 현재 위치로부터 집게를 발사하는 동작
+# 화면 밖으로 나가면 집게는 다시 원위치
+# 뻗을 때 속도, 돌아올 때 속도
 from lib2to3.pgen2.token import RIGHTSHIFTEQUAL
 import pygame
 import os
@@ -18,7 +21,7 @@ class Claw(pygame.sprite.Sprite):
 
         self.original_image = self.image # rotate 할 때, 새로운 이미지가 계속 새성되는 것이므로 원본 이미지가 필요하다. 
 
-    def update(self): # game 루프가 돌때마다 실행되는 함수
+    def update(self, to_x): # game 루프가 돌때마다 실행되는 함수
         # angle은 계속 업데이트 된다.
         if self.direction == LEFT:
             self.angle += self.angle_speed
@@ -27,10 +30,12 @@ class Claw(pygame.sprite.Sprite):
 
         if self.angle < 10:
             self.angle = 10
-            self.direction = LEFT
+            self.set_direction(LEFT)
         elif self.angle > 170:
             self.angle = 170
-            self.direction = RIGHT
+            self.set_direction(RIGHT)
+        
+        self.offset.x += to_x
 
         self.rotate() # ***
 
@@ -42,6 +47,9 @@ class Claw(pygame.sprite.Sprite):
         
         self.rect = self.image.get_rect(center=self.position + offset_rotated) # 변화하는 claw 이미지에 따라 image의 center를 position에 고정시킨다.
         pygame.draw.rect(screen, RED, self.rect, 1)           # > 이미지가 제자리에서 회전할 수 있다.
+
+    def set_direction(self, direction):
+        self.direction = direction
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -78,9 +86,14 @@ pygame.display.set_caption('Gold Mining Game')
 clock = pygame.time.Clock()
 
 # 게임 관련 변수
+to_x = 0 # x좌표 기준으로 집게 이미지를 이동시킬 값 저장 변수
+move_speed = 12 #발사할 때 이동 스피드, 상황에 따라서 스피드에 변화를 주어야 하기 때문에 변수에 지정
+
+# 방향 변수
 default_offset_x_claw = (40, 0)
 LEFT = -1 # 왼쪽 방향
 RIGHT = 1 # 오른쪽 방향
+STOP = 0
 
 # 색 변수
 RED = (255, 0, 0)
@@ -118,9 +131,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        if event.type == pygame.MOUSEBUTTONDOWN: # 마우스 버튼 누를 때 집게를 뻗음
+            claw.set_direction(STOP) 
+            to_x = move_speed
+
     screen.blit(background_image, (0, 0))
     gemstone_group.draw(screen) # 그룹내 모든 sprite를 screen에 그림
-    claw.update()
+    claw.update(to_x)
     claw.draw(screen)
 
     pygame.display.update()
