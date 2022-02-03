@@ -1,8 +1,18 @@
-# 보석 그룹핑 하기 -> 파이썬에서 제공하는 sprite의 Group()을 사용하면 한번에 draw 해줄수 있다.
-from email.mime import image
+# 집게 클래스 만들기
 import pygame
 import os
 
+# 집게 클래스
+class Claw(pygame.sprite.Sprite):
+    def __init__(self, image, position):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect(center=position)
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.rect))
+
+# 보석 클래스
 class Gemstone(pygame.sprite.Sprite):
     def __init__(self, image, position):
         super().__init__()
@@ -52,6 +62,9 @@ gemstone_group = pygame.sprite.Group()
 
 setup_gemstone()
 
+# 집게 객체
+claw_image = pygame.image.load(os.path.join(images_path, 'claw.png'))
+claw = Claw(claw_image, (screen_width // 2, 110))
 
 running = True
 while running:
@@ -62,6 +75,7 @@ while running:
 
     screen.blit(background_image, (0, 0))
     gemstone_group.draw(screen) # 그룹내 모든 sprite를 screen에 그림
+    claw.draw(screen)
 
     pygame.display.update()
 
