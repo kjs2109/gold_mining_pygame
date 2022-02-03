@@ -1,5 +1,6 @@
-# 게임 기본 프레임 만들기
+# 배경 이미지 넣기
 import pygame
+import os
 
 pygame.init()
 
@@ -11,12 +12,22 @@ pygame.display.set_caption('Gold Mining Game')
 
 clock = pygame.time.Clock()
 
+# 현재, 이미지 경로
+# 이렇게 해주면 게임의 파일 위치가 바껴도 현재위치를 계속 불러올 수 있다.
+current_path = os.path.dirname(__file__)
+images_path = os.path.join(current_path, 'images')
+
+# 배경 이미지
+background_image = pygame.image.load(os.path.join(images_path, 'background.png'))
+
 running = True
 while running:
     clock.tick(30)  # FPS 값 30으로 고정
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    screen.blit(background_image, (0, 0))
 
     pygame.display.update()
 
