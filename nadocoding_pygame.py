@@ -1,4 +1,6 @@
-# 충돌 처리 (mask) 이미지 편집, collide_mask()
+# 게임 스코어 처리
+# 목표 점수 (1500)
+# 현재 점수 (300)
 import math
 import pygame
 import os
@@ -92,6 +94,18 @@ def setup_gemstone():
     # 다이아몬드
     gemstone_group.add(Gemstone(gemstone_images[3], (900, 420), diamond_price, diamond_speed))
 
+def update_score(score):
+    global curr_score
+    curr_score += score
+
+def display_score():
+    curr_score_text = game_font.render(f'Current Socre: {curr_score:,}', True, BLACK)
+    gole_score_text = game_font.render(f'Gole Score: {gole_score:,}', True, BLACK)
+
+    screen.blit(curr_score_text, (50, 20))
+    screen.blit(gole_score_text, (50, 60))
+
+
 pygame.init()
 
 screen_width = 1280
@@ -101,6 +115,8 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Gold Mining Game')
 
 clock = pygame.time.Clock()
+
+game_font = pygame.font.SysFont('arialrounded', 30)
 
 # 게임 관련 변수
 to_x = 0 # x좌표 기준으로 집게 이미지를 이동시킬 값 저장 변수
@@ -118,6 +134,9 @@ STOP = 0
 # 색 변수
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
+
+gole_score = 1500
+curr_score = 0
 
 # 현재, 이미지 경로
 # 이렇게 해주면 게임의 파일 위치가 바껴도 현재위치를 계속 불러올 수 있다.
@@ -162,7 +181,7 @@ while running:
         to_x = 0
         claw.set_init_state()
         if caught_gemstone: # 잡힌 보석이 있을 때
-            #update_score(caught_gemstone.price)
+            update_score(caught_gemstone.price)
             gemstone_group.remove(caught_gemstone) # 그룹에서 잡힌 보석 제외
             caught_gemstone = None
 
@@ -185,6 +204,8 @@ while running:
     claw.update(to_x) # 루프 돌때마다 업데이트
 
     claw.draw(screen) 
+
+    display_score()
 
     pygame.display.update()
 
