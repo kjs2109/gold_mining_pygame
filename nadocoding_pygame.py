@@ -1,4 +1,4 @@
-# 집게 클래스 만들기
+# 집게를 어느 지점(pivot, 중심점)으로부터 떨어트켜서 배치하는 것 
 import pygame
 import os
 
@@ -8,9 +8,16 @@ class Claw(pygame.sprite.Sprite):
         super().__init__()
         self.image = image
         self.rect = self.image.get_rect(center=position)
+        self.position = position
+        self.offset = pygame.math.Vector2(default_offset_x_claw)
+
+    def update(self):
+        rect_center = self.position + self.offset
+        self.rect = self.image.get_rect(center=rect_center)
 
     def draw(self, screen):
-        screen.blit(self.image, (self.rect))
+        screen.blit(self.image, self.rect)
+        pygame.draw.circle(screen, RED, self.position, 3) # 중심점 표시
 
 # 보석 클래스
 class Gemstone(pygame.sprite.Sprite):
@@ -40,6 +47,12 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Gold Mining Game')
 
 clock = pygame.time.Clock()
+
+# 게임 관련 변수
+default_offset_x_claw = (40, 0)
+
+# 색 변수
+RED = (255, 0, 0)
 
 # 현재, 이미지 경로
 # 이렇게 해주면 게임의 파일 위치가 바껴도 현재위치를 계속 불러올 수 있다.
@@ -75,6 +88,7 @@ while running:
 
     screen.blit(background_image, (0, 0))
     gemstone_group.draw(screen) # 그룹내 모든 sprite를 screen에 그림
+    claw.update()
     claw.draw(screen)
 
     pygame.display.update()
