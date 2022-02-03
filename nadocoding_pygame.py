@@ -45,7 +45,7 @@ class Claw(pygame.sprite.Sprite):
         offset_rotated = self.offset.rotate(self.angle) # 변화하하는 각도에 따라 자동으로 변화하는 (x, y) 좌표를 구해준다. Vector2에서 제공하는 함수
         
         self.rect = self.image.get_rect(center=self.position + offset_rotated) # 변화하는 claw 이미지에 따라 image의 center를 position에 고정시킨다.
-        pygame.draw.rect(screen, RED, self.rect, 1)           # > 이미지가 제자리에서 회전할 수 있다.
+                                                                                # > 이미지가 제자리에서 회전할 수 있다.
 
     def set_direction(self, direction):
         self.direction = direction
@@ -105,6 +105,15 @@ def display_score():
     screen.blit(curr_score_text, (50, 20))
     screen.blit(gole_score_text, (50, 60))
 
+def display_time(time):
+    timer_text = game_font.render(f'Time : {time}', True, BLACK)
+    screen.blit(timer_text, (1100, 50))
+
+def display_game_over():
+    game_font = pygame.font.SysFont('arialround', 60)
+    game_result_text = game_font.render(game_result, True, BLACK)
+    rect_game_over = game_result_text.get_rect(center=(screen_width / 2, screen_height / 2))
+    screen.blit(game_result_text, rect_game_over)
 
 pygame.init()
 
@@ -116,7 +125,7 @@ pygame.display.set_caption('Gold Mining Game')
 
 clock = pygame.time.Clock()
 
-game_font = pygame.font.SysFont('arialrounded', 30)
+game_font = pygame.font.SysFont('arialrounded', 40)
 
 # 게임 관련 변수
 to_x = 0 # x좌표 기준으로 집게 이미지를 이동시킬 값 저장 변수
@@ -134,9 +143,15 @@ STOP = 0
 # 색 변수
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
+YELLOW = (225, 225, 0)
 
 gole_score = 1500
 curr_score = 0
+
+# 게임 오버 관련 변수
+game_result = None # 게임 결과
+total_time = 60 # 총 시간
+start_ticks = pygame.time.get_ticks()
 
 # 현재, 이미지 경로
 # 이렇게 해주면 게임의 파일 위치가 바껴도 현재위치를 계속 불러올 수 있다.
@@ -207,6 +222,22 @@ while running:
 
     display_score()
 
+    # 시간 계산
+    elapsed_time = (pygame.time.get_ticks() - start_ticks) // 1000
+    display_time(total_time - elapsed_time)
+
+    if total_time - elapsed_time <= 0:
+        running = False
+        if curr_score >= gole_score:
+            game_result = 'Mission Complete!!'
+        else:
+            game_result = 'Game over...'
+
+
     pygame.display.update()
+
+display_game_over()
+pygame.display.update()
+pygame.time.delay(3000)
 
 pygame.quit()
