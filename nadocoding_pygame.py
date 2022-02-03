@@ -1,6 +1,4 @@
-# 게임 스코어 처리
-# 목표 점수 (1500)
-# 현재 점수 (300)
+# 보석을 다양하게 넣어서 게임 완성하기
 import math
 import pygame
 import os
@@ -87,12 +85,20 @@ def setup_gemstone():
     # 작은 금
     small_gold = Gemstone(gemstone_images[0], (200, 380), small_gold_price, small_gold_speed)
     gemstone_group.add(small_gold)
+    gemstone_group.add(Gemstone(gemstone_images[0], (400, 400), small_gold_price, small_gold_speed))
+    gemstone_group.add(Gemstone(gemstone_images[0], (600, 450), small_gold_price, small_gold_speed))
+    gemstone_group.add(Gemstone(gemstone_images[0], (800, 400), small_gold_price, small_gold_speed))
+    gemstone_group.add(Gemstone(gemstone_images[0], (1150, 380), small_gold_price, small_gold_speed))
     # 큰 금
     gemstone_group.add(Gemstone(gemstone_images[1], (300, 500), big_gold_price, big_gold_speed))
+    gemstone_group.add(Gemstone(gemstone_images[1], (800, 500), big_gold_price, big_gold_speed))
     # 돌
     gemstone_group.add(Gemstone(gemstone_images[2], (300, 380), stone_price, stone_speed))
+    gemstone_group.add(Gemstone(gemstone_images[2], (700, 330), stone_price, stone_speed))
+    gemstone_group.add(Gemstone(gemstone_images[2], (1000, 480), stone_price, stone_speed))
     # 다이아몬드
     gemstone_group.add(Gemstone(gemstone_images[3], (900, 420), diamond_price, diamond_speed))
+    gemstone_group.add(Gemstone(gemstone_images[3], (150, 500), diamond_price, diamond_speed))
 
 def update_score(score):
     global curr_score
@@ -150,7 +156,7 @@ curr_score = 0
 
 # 게임 오버 관련 변수
 game_result = None # 게임 결과
-total_time = 60 # 총 시간
+total_time = 40 # 총 시간
 start_ticks = pygame.time.get_ticks()
 
 # 현재, 이미지 경로
@@ -231,7 +237,7 @@ while running:
         if curr_score >= gole_score:
             game_result = 'Mission Complete!!'
         else:
-            game_result = 'Game over...'
+            game_result = 'Game Over...'
 
 
     pygame.display.update()
