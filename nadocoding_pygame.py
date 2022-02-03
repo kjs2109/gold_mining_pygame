@@ -1,4 +1,4 @@
-# 집게를 어느 지점(pivot, 중심점)으로부터 떨어트켜서 배치하는 것 
+# pivot으로 부터 집게까지 직선 그리기
 import pygame
 import os
 
@@ -18,6 +18,7 @@ class Claw(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         pygame.draw.circle(screen, RED, self.position, 3) # 중심점 표시
+        pygame.draw.line(screen, BLACK, self.position, self.rect.center, 5) # ***
 
 # 보석 클래스
 class Gemstone(pygame.sprite.Sprite):
@@ -53,6 +54,7 @@ default_offset_x_claw = (40, 0)
 
 # 색 변수
 RED = (255, 0, 0)
+BLACK = (0, 0, 0)
 
 # 현재, 이미지 경로
 # 이렇게 해주면 게임의 파일 위치가 바껴도 현재위치를 계속 불러올 수 있다.
