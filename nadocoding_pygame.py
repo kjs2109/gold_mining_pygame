@@ -1,6 +1,14 @@
-# 배경 이미지 넣기
+# 보석 이미지 불러오기
+from email.mime import image
 import pygame
 import os
+
+class Gemstone(pygame.sprite.Sprite):
+    def __init__(self, image, position):
+        super().__init__()
+        self.image = image
+        self.rect = self.get_rect(center=position)
+
 
 pygame.init()
 
@@ -19,6 +27,15 @@ images_path = os.path.join(current_path, 'images')
 
 # 배경 이미지
 background_image = pygame.image.load(os.path.join(images_path, 'background.png'))
+
+# 4개 보석 이미지 (작은 금, 큰 금, 돌, 다이아몬드)
+gemstone_images = [
+    pygame.image.load(os.path.join(images_path, 'small_gold.png')),
+    pygame.image.load(os.path.join(images_path, 'big_gold.png')),
+    pygame.image.load(os.path.join(images_path, 'stone.png')),
+    pygame.image.load(os.path.join(images_path, 'diamond.png')),
+]
+
 
 running = True
 while running:
