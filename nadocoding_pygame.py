@@ -13,7 +13,7 @@ class Claw(pygame.sprite.Sprite):
         self.image = image # 계속 업데이트 되는 이미지, 집게는 계속 움직인다.
         self.rect = self.image.get_rect(center=position) # 이미지가 변함에 따라 rotate 함수에서 계속 업데이트 됨
         self.position = position
-        self.offset = pygame.math.Vector2(default_offset_x_claw)
+        self.offset = pygame.math.Vector2(default_offset_x_claw, 0)
 
         self.angle = 10 # 초기 각도,  현재각도로 계속 업데이드
         self.direction = LEFT
@@ -53,8 +53,11 @@ class Claw(pygame.sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        pygame.draw.circle(screen, RED, self.position, 3) # 중심점 표시
         pygame.draw.line(screen, BLACK, self.position, self.rect.center, 5) # ***
+
+    def set_init_state(self): # 마우스를 클릭한 순간 claw의 swining이 멈췄다.다시 swing 시켜주기 위해서는 self.direction을 다시 설정해주어야 한다.
+        self.offset.x = default_offset_x_claw
+        self.direction = LEFT
 
 # 보석 클래스
 class Gemstone(pygame.sprite.Sprite):
@@ -88,9 +91,9 @@ clock = pygame.time.Clock()
 # 게임 관련 변수
 to_x = 0 # x좌표 기준으로 집게 이미지를 이동시킬 값 저장 변수
 move_speed = 12 #발사할 때 이동 스피드, 상황에 따라서 스피드에 변화를 주어야 하기 때문에 변수에 지정
-
+return_speed = 20
 # 방향 변수
-default_offset_x_claw = (40, 0)
+default_offset_x_claw = 40
 LEFT = -1 # 왼쪽 방향
 RIGHT = 1 # 오른쪽 방향
 STOP = 0
@@ -135,10 +138,20 @@ while running:
             claw.set_direction(STOP) 
             to_x = move_speed
 
+    if claw.rect.left < 0 or claw.rect.bottom > screen_height or claw.rect.right > screen_width:
+        to_x = -return_speed
+
+    if claw.offset.x < default_offset_x_claw:
+        to_x = 0
+        claw.set_init_state()
+
     screen.blit(background_image, (0, 0))
+
     gemstone_group.draw(screen) # 그룹내 모든 sprite를 screen에 그림
-    claw.update(to_x)
-    claw.draw(screen)
+
+    claw.update(to_x) # 루프 돌때마다 업데이트
+
+    claw.draw(screen) 
 
     pygame.display.update()
 
