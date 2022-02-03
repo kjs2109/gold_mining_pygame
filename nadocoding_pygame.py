@@ -1,4 +1,5 @@
-# pivot으로 부터 집게까지 직선 그리기
+# 집게를 좌우로 이동 시키기 and swing
+from lib2to3.pgen2.token import RIGHTSHIFTEQUAL
 import pygame
 import os
 
@@ -6,14 +7,41 @@ import os
 class Claw(pygame.sprite.Sprite):
     def __init__(self, image, position):
         super().__init__()
-        self.image = image
-        self.rect = self.image.get_rect(center=position)
+        self.image = image # 계속 업데이트 되는 이미지, 집게는 계속 움직인다.
+        self.rect = self.image.get_rect(center=position) # 이미지가 변함에 따라 rotate 함수에서 계속 업데이트 됨
         self.position = position
         self.offset = pygame.math.Vector2(default_offset_x_claw)
 
-    def update(self):
-        rect_center = self.position + self.offset
-        self.rect = self.image.get_rect(center=rect_center)
+        self.angle = 10 # 초기 각도,  현재각도로 계속 업데이드
+        self.direction = LEFT
+        self.angle_speed = 2.5 # 집게의 각도 변경 폭(좌우 이동 속도)
+
+        self.original_image = self.image # rotate 할 때, 새로운 이미지가 계속 새성되는 것이므로 원본 이미지가 필요하다. 
+
+    def update(self): # game 루프가 돌때마다 실행되는 함수
+        # angle은 계속 업데이트 된다.
+        if self.direction == LEFT:
+            self.angle += self.angle_speed
+        elif self.direction == RIGHT:
+            self.angle -= self.angle_speed
+
+        if self.angle < 10:
+            self.angle = 10
+            self.direction = LEFT
+        elif self.angle > 170:
+            self.angle = 170
+            self.direction = RIGHT
+
+        self.rotate() # ***
+
+    # claw 이미지가 회전하고 회전하는 offset을 적용시킨 좌표를 구해줌
+    def rotate(self):
+        self.image = pygame.transform.rotozoom(self.original_image, -self.angle, 1)
+
+        offset_rotated = self.offset.rotate(self.angle) # 변화하하는 각도에 따라 자동으로 변화하는 (x, y) 좌표를 구해준다. Vector2에서 제공하는 함수
+        
+        self.rect = self.image.get_rect(center=self.position + offset_rotated) # 변화하는 claw 이미지에 따라 image의 center를 position에 고정시킨다.
+        pygame.draw.rect(screen, RED, self.rect, 1)           # > 이미지가 제자리에서 회전할 수 있다.
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -51,6 +79,8 @@ clock = pygame.time.Clock()
 
 # 게임 관련 변수
 default_offset_x_claw = (40, 0)
+LEFT = -1 # 왼쪽 방향
+RIGHT = 1 # 오른쪽 방향
 
 # 색 변수
 RED = (255, 0, 0)
